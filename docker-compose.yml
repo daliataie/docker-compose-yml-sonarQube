@@ -1,3 +1,5 @@
+#this yml has all configuration for installing both SonarQube and Postgresq
+
 version: "3"
 
 services:
