@@ -1,0 +1,47 @@
+#This example instructs Docker-compose to:
+
+Build nginx from path ./nginx
+Links Angular and django containers (so their IP in docker network is resolved by name)
+Binds ports 80, 443, 8000 to the host machine
+Add it to network my_net
+(so all 3 containers are in the same network and therefore accessible from each other)
+Then similar is done for django and Angular container.
+If you would use just docker commands, it would be something like:
+
+docker build --name nginx .
+docker run --link django:django angular:angular --expose 80 443 8000 --net my_net nginx
+So while you probably don't want to type all these options and commands for each image/container, you can write docker-compose.yml file in which you write all these instructions in a human-readable format.
+(Same can be achieved with Ansible), nginx ( web server), django ( python web framework), Angular ( web app platform).
+
+
+version: '2'
+services:
+  nginx:
+      build: ./nginx
+      links:
+          - django:django
+          - angular:angular
+      ports:
+          - "80:80"
+          - "8000:8000"
+          - "443:443"
+      networks:
+       - my_net
+  django:
+      build: ./django
+      expose:
+          - "8000"
+      networks:
+       - my_net
+  angular:
+      build: ./angular2
+      links:
+          - django:django
+      expose:
+          - "80"
+      networks:
+        - my_net
+networks:
+  my_net:
+    external:
+      name: my_net
